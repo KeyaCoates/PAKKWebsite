@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAKK</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Screen 1: Landing -->
+<section class="screen dark active" id="landing">
+  <header class="nav">
+    <button class="logo" type="button" data-go="landing" aria-label="PAKK home">PAKK</button>
+    <ul>
+      <li><a href="#">How it works</a></li>
+      <li><a href="#">Neighborhoods</a></li>
+      <li><a href="#">Stories</a></li>
+      <li><button class="btn-login" data-go="login">Log in</button></li>
+    </ul>
+  </header>
+  <div class="hero">
+    <h1>Find a home that fits your <em>life</em> and your budget.</h1>
+    <p>We match commute times, neighborhood culture, and true monthly costs&mdash;so you can live where life works.</p>
+  </div>
+  <form class="search" id="searchForm">
+    <div class="field"><label for="s-loc">Location</label><input id="s-loc" placeholder="ZIP code, e.g. 07030" value="07030" inputmode="numeric" maxlength="10" autocomplete="postal-code"></div>
+    <div class="field"><label for="s-budget">Max budget</label><input id="s-budget" placeholder="$4,000" value="$4,000"></div>
+    <div class="field"><label for="s-mode">Commute by</label>
+      <div class="pair">
+        <select id="s-mode" aria-label="Commute mode"><option value="drive">Drive</option><option value="bus">Bus</option><option value="train">Train</option></select>
+        <select id="s-max" aria-label="Maximum commute"><option value="15">15 min</option><option value="30">30 min</option><option value="45" selected>45 min</option><option value="60">60 min</option></select>
+      </div>
+    </div>
+    <div class="field vibe-field"><label for="s-vibe">Lifestyle vibe</label>
+      <select id="s-vibe" class="vibe-select">
+        <option value="" disabled selected>Choose a vibe</option>
+        <option>Walkable &amp; lively</option><option>Quiet &amp; residential</option><option>Nightlife &amp; dining</option>
+        <option>Green &amp; outdoorsy</option><option>Family-friendly</option><option value="other">Other&hellip;</option>
+      </select>
+      <input class="other" placeholder="Describe your vibe" aria-label="Describe your vibe">
+    </div>
+    <button class="search-go" type="submit" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    </button>
+  </form>
+  <p class="msg" id="s-msg" role="status"></p>
+</section>
+
+<!-- Screen 2: Login -->
+<section class="screen dark" id="login">
+  <header class="nav"><button class="logo" type="button" data-go="landing" aria-label="PAKK home">PAKK</button></header>
+  <div class="login-wrap">
+    <form class="card-login" id="loginForm">
+      <h2>Welcome Back</h2>
+      <p class="sub">Sign in to see your saved homes and newest neighborhood matches.</p>
+      <label for="user">Username</label><input id="user" autocomplete="username" required>
+      <label for="pass">Password</label><input id="pass" type="password" autocomplete="current-password" required>
+      <button class="btn-primary" type="submit">Log in</button>
+      <button class="back" type="button" data-go="landing">Back to search</button>
+    </form>
+  </div>
+</section>
+
+<!-- Screen 3: Matches -->
+<section class="screen" id="matches">
+  <button class="logo" type="button" data-go="landing" aria-label="PAKK home">PAKK</button>
+  <div class="head">
+    <div>
+      <h2>Your matches</h2>
+      <p id="areaNote"></p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="count">4</b><span>Strong matches</span></div>
+      <div class="stat"><b>6</b><span>New this week</span></div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="field"><label>Location</label><strong id="v-loc"></strong></div>
+    <div class="field"><label>Budget</label><strong id="v-budget"></strong></div>
+    <div class="field"><label>Commute</label><strong id="v-commute"></strong></div>
+    <div class="field"><label>Vibe</label><strong id="v-vibe"></strong></div>
+    <button class="btn-edit" type="button" id="editPrefs">Edit preferences</button>
+  </div>
+
+  <div class="layout">
+    <div class="list" id="list"></div>
+    <aside class="why">
+      <h4>Why these match</h4>
+      <p class="lead">Your top homes share the three things you care about most.</p>
+      <div class="item"><b>Under budget</b><span id="w-budget"></span></div>
+      <div class="item"><b>Easy commute</b><span id="w-commute"></span></div>
+      <div class="item"><b>Walkable life</b><span id="w-walk"></span></div>
+    </aside>
+  </div>
+</section>
+
+<dialog id="prefs" aria-labelledby="prefsTitle">
+  <form id="prefsForm">
+    <h3 id="prefsTitle">Edit preferences</h3>
+    <div class="pf"><label for="p-loc">Location (ZIP code)</label><input id="p-loc" placeholder="e.g. 07030" inputmode="numeric" maxlength="10"></div>
+    <div class="pf"><label for="p-dest">Commute to (ZIP code)</label><input id="p-dest" placeholder="Leave blank for Midtown Manhattan" inputmode="numeric" maxlength="10"></div>
+    <fieldset class="pf"><legend>Commute by</legend>
+      <div class="seg">
+        <label><input type="radio" name="mode" value="drive"><span>Drive</span></label>
+        <label><input type="radio" name="mode" value="bus"><span>Bus</span></label>
+        <label><input type="radio" name="mode" value="train"><span>Train</span></label>
+      </div>
+    </fieldset>
+    <div class="two">
+      <div class="pf"><label for="p-max">Max commute</label>
+        <select id="p-max"><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option></select></div>
+      <div class="pf"><label for="p-budget">Max budget ($/mo)</label><input id="p-budget" inputmode="numeric"></div>
+    </div>
+    <div class="pf vibe-field"><label for="p-vibe">Lifestyle vibe</label>
+      <select id="p-vibe" class="vibe-select">
+        <option value="">Any vibe</option><option>Walkable &amp; lively</option><option>Quiet &amp; residential</option><option>Nightlife &amp; dining</option>
+        <option>Green &amp; outdoorsy</option><option>Family-friendly</option><option value="other">Other&hellip;</option>
+      </select>
+      <input class="other" placeholder="Describe your vibe" aria-label="Describe your vibe">
+    </div>
+    <p class="msg dlg-msg" id="p-msg" role="alert"></p>
+    <div class="dlg-actions">
+      <button type="button" class="btn-ghost" id="p-cancel">Cancel</button>
+      <button type="submit" class="btn-primary">Save preferences</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const MIDTOWN = {name:"Midtown Manhattan", lat:40.7484, lon:-73.9878};
+const HOBOKEN = {name:"Hoboken, NJ 07030", lat:40.7440, lon:-74.0324};
+
+// Rough door-to-door averages: speed in mph, plus fixed minutes for tunnel/parking, walking to the station and waiting
+const MODES = {
+  drive:{label:"Drive", phrase:"driving", mph:18, fixed:18},
+  bus:{label:"Bus", phrase:"by bus", mph:10, fixed:12},
+  train:{label:"Train", phrase:"by PATH train", mph:22, fixed:14}
+};
+
+const homes = [
+  {name:"Hudson Estates", img:"images/hudson-estates.jpg", hood:"1202 Hudson St, Hoboken, NJ", price:2750, walk:96, lat:40.7505, lon:-74.0270, cls:"", tags:["Pet friendly","Good transit"], vibes:["Walkable & lively","Nightlife & dining"]},
+  {name:"Park + Garden", img:"images/park-garden.jpg", hood:"1450 Garden St, Hoboken, NJ", price:3050, walk:90, lat:40.7562, lon:-74.0322, cls:"c2", tags:["Uptown Hoboken","Quiet blocks"], vibes:["Quiet & residential","Green & outdoorsy","Family-friendly"]},
+  {name:"Maxwell Place", img:"images/maxwell-place.jpg", hood:"1125 Maxwell Ln, Hoboken, NJ", price:3900, walk:92, lat:40.7490, lon:-74.0252, cls:"c3", tags:["Waterfront","Hudson views"], vibes:["Green & outdoorsy","Family-friendly","Walkable & lively"]},
+  {name:"Washington Estates", img:"images/washington-estates.jpg", hood:"1213 Washington St, Hoboken, NJ", price:3200, walk:97, lat:40.7512, lon:-74.0297, cls:"c4", tags:["Washington St dining","Pet friendly"], vibes:["Nightlife & dining","Walkable & lively"]}
+];
+
+const prefs = {loc:"07030", destZip:"", area:HOBOKEN, dest:MIDTOWN, mode:"drive", maxMin:45, budget:4000, vibe:"", other:""};
+
+const $ = s => document.querySelector(s);
+const show = id => {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+  window.scrollTo(0, 0);
+};
+document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(b.dataset.go)));
+
+const parseBudget = v => parseInt(String(v).replace(/\D/g, ""), 10) || 0;
+const avg = (list, f) => Math.round(list.reduce((sum, x) => sum + f(x), 0) / list.length);
+
+// Straight-line distance in miles (haversine)
+function miles(a, b) {
+  const R = 3958.8, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+// Estimated commute: straight-line miles x 1.3 for real street routes, then speed + fixed time for the mode
+function commuteMin(home, dest, mode) {
+  const m = MODES[mode];
+  return Math.round(miles(home, dest) * 1.3 / m.mph * 60 + m.fixed);
+}
+
+// ZIP lookup via the free zippopotam.us API
+const zipCache = new Map();
+async function resolvePlace(text) {
+  const t = text.trim();
+  if (!t || /^hoboken/i.test(t)) return {ok:true, place:HOBOKEN};
+  if (!/^\d{5}$/.test(t)) return {ok:false, error:"Enter a 5-digit ZIP code."};
+  if (zipCache.has(t)) return {ok:true, place:zipCache.get(t)};
+  try {
+    const r = await fetch("https://api.zippopotam.us/us/" + t);
+    if (!r.ok) return {ok:false, error:`We couldn't find ZIP code ${t}. Check the digits and try again.`};
+    const p = (await r.json()).places[0];
+    const place = {name:`${p["place name"]}, ${p["state abbreviation"]} ${t}`, lat:+p.latitude, lon:+p.longitude};
+    zipCache.set(t, place);
+    return {ok:true, place};
+  } catch {
+    return {ok:false, error:"ZIP lookup needs an internet connection. Check yours and try again."};
+  }
+}
+const resolveDest = text => text.trim() ? resolvePlace(text) : Promise.resolve({ok:true, place:MIDTOWN});
+
+// "Other" vibe: reveal a text box when selected
+document.querySelectorAll(".vibe-select").forEach(sel => {
+  sel.addEventListener("change", () => {
+    const field = sel.closest(".vibe-field");
+    const isOther = sel.value === "other";
+    field.classList.toggle("is-other", isOther);
+    if (isOther) field.querySelector(".other").focus();
+  });
+});
+
+function render() {
+  const {area, dest, mode, maxMin, budget} = prefs;
+  const m = MODES[mode];
+  const vibe = prefs.vibe && prefs.vibe !== "other" ? prefs.vibe : null; // custom vibes don't filter
+  const nearby = homes.filter(h => miles(h, area) <= 5)
+    .map(h => ({...h, min: commuteMin(h, dest, mode), under: budget - h.price}));
+  const fits = nearby.filter(h => h.min <= maxMin && h.under >= 0 && (!vibe || h.vibes.includes(vibe)))
+    .sort((a, b) => a.min - b.min);
+
+  $("#areaNote").textContent = `Showing homes near ${area.name}. Commute times are estimated ${m.phrase} to ${dest.name}.`;
+  $("#v-loc").textContent = area.name;
+  $("#v-budget").textContent = "Up to $" + budget.toLocaleString();
+  $("#v-commute").textContent = `${m.label}, under ${maxMin} min`;
+  $("#v-vibe").textContent = prefs.vibe === "other" ? (prefs.other || "Custom") : (prefs.vibe || "Any vibe");
+  $("#count").textContent = fits.length;
+
+  $("#w-budget").textContent = fits.length ? `Average savings of $${avg(fits, h => h.under)}/month` : "No matches yet";
+  $("#w-commute").textContent = fits.length ? `Average trip is ${avg(fits, h => h.min)} min ${m.phrase}` : "No matches yet";
+  $("#w-walk").textContent = fits.length ? `Average Walk Score is ${avg(fits, h => h.walk)}` : "No matches yet";
+
+  let empty = "";
+  if (!nearby.length) empty = "We only have sample listings in Hoboken right now. Try ZIP code 07030.";
+  else if (!fits.length) empty = "No homes fit those limits. Try a longer commute, a higher budget, or a different vibe.";
+
+  $("#list").innerHTML = empty ? `<div class="empty">${empty}</div>` : fits.map(h => `
+    <article class="match">
+      <div class="photo ${h.cls}"><img src="${h.img}" alt="${h.name} exterior" onerror="this.remove()"></div>
+      <div class="info">
+        <div class="row"><h3>${h.name}</h3><span class="price">$${h.price.toLocaleString()}</span></div>
+        <div class="hood">${h.hood}</div>
+        <div class="metrics">
+          <div><b>${h.min} min</b><span>est. ${m.phrase}</span></div>
+          <div><b>${h.walk}</b><span>Walk Score</span></div>
+          <div><b>$${h.under}</b><span>Under budget</span></div>
+        </div>
+        <div class="tags">${h.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+        <div class="actions"><button class="btn-ghost">View Details</button><button class="btn-solid">Request Tour</button></div>
+      </div>
+    </article>`).join("");
+}
+
+// Landing search: look up the ZIP, save preferences, go to login
+$("#searchForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#s-msg");
+  msg.textContent = "Finding that area…";
+  const r = await resolvePlace($("#s-loc").value);
+  if (!r.ok) { msg.textContent = r.error; return; }
+  msg.textContent = "";
+  Object.assign(prefs, {
+    loc: $("#s-loc").value.trim(), area: r.place,
+    mode: $("#s-mode").value, maxMin: +$("#s-max").value,
+    budget: parseBudget($("#s-budget").value) || prefs.budget,
+    vibe: $("#s-vibe").value, other: $("#landing .other").value.trim()
+  });
+  show("login");
+});
+
+$("#loginForm").addEventListener("submit", e => { e.preventDefault(); render(); show("matches"); });
+
+// Edit preferences dialog
+const dlg = $("#prefs");
+$("#editPrefs").addEventListener("click", () => {
+  $("#p-loc").value = prefs.loc;
+  $("#p-dest").value = prefs.destZip;
+  document.querySelector(`input[name=mode][value=${prefs.mode}]`).checked = true;
+  $("#p-max").value = prefs.maxMin;
+  $("#p-budget").value = prefs.budget;
+  const f = dlg.querySelector(".vibe-field");
+  f.querySelector("select").value = prefs.vibe;
+  f.classList.toggle("is-other", prefs.vibe === "other");
+  f.querySelector(".other").value = prefs.other;
+  $("#p-msg").textContent = "";
+  dlg.showModal();
+});
+$("#p-cancel").addEventListener("click", () => dlg.close());
+$("#prefsForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#p-msg");
+  msg.textContent = "Checking ZIP codes…";
+  const [a, d] = await Promise.all([resolvePlace($("#p-loc").value), resolveDest($("#p-dest").value)]);
+  if (!a.ok || !d.ok) { msg.textContent = (a.ok ? d : a).error; return; }
+  Object.assign(prefs, {
+    loc: $("#p-loc").value.trim(), destZip: $("#p-dest").value.trim(), area: a.place, dest: d.place,
+    mode: document.querySelector("input[name=mode]:checked").value,
+    maxMin: +$("#p-max").value, budget: parseBudget($("#p-budget").value) || prefs.budget,
+    vibe: $("#p-vibe").value,
+    other: dlg.querySelector(".other").value.trim()
+  });
+  render();
+  dlg.close();
+});
+render();
+</script>
+</body>
+</html>
